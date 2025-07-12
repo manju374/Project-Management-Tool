@@ -1,0 +1,59 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Project Management</title>
+  <link rel="stylesheet" href="./css/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/frappe-gantt/dist/frappe-gantt.css" />
+  <script src="https://unpkg.com/frappe-gantt/dist/frappe-gantt.min.js"></script>
+</head>
+
+  <div id="loginSection">
+    <h2>Login</h2>
+    <input id="loginUser" placeholder="Username" />
+    <input id="loginPass" type="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+  </div>
+
+  <div id="mainApp" style="display: none;">
+    <h2>Create Project</h2>
+    <div id="adminControls">
+      <input id="projectName" placeholder="New project name" />
+      <button onclick="createProject()">Create</button>
+    </div>
+    <div id="projects"></div>
+
+    <h2>Tasks</h2>
+    <div id="taskControls">
+      <input id="taskTitle" placeholder="Task title" />
+      <select id="taskStatus">
+        <option>To-Do</option>
+        <option>In Progress</option>
+        <option>Done</option>
+      </select>
+      <input type="date" id="taskDeadline" />
+      <button onclick="addTask()">Add Task</button>
+    </div>
+
+    <div id="kanban"></div>
+
+    <h2>Gantt Chart</h2>
+    <div id="gantt"></div>
+
+    <h2>Chat</h2>
+    <div id="chatBox"></div>
+    <input id="chatInput" placeholder="Type a message" />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+  <div class ="footer">
+  <footer style="text-align:center; margin-top: 30px; font-size: 14px; color: #777;">
+    &copy; <span id="year"></span> MB Stack. All rights reserved.
+  </footer>
+  </div>
+
+  <script src="js/app.js"></script>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
