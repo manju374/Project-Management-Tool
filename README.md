@@ -24,5 +24,4 @@ A lightweight and real-time web-based project management tool to simplify task a
 
 ---
 
-## 📁 Project Structure
 
