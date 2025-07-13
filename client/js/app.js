@@ -3,7 +3,6 @@ const ws = new WebSocket(`ws://${window.location.hostname}:5000`);
 let token = '';
 let role = '';
 
-// ---------- Login ----------
 function login() {
   const username = document.getElementById('loginUser').value.trim();
   const password = document.getElementById('loginPass').value;
@@ -33,7 +32,6 @@ function login() {
     .catch(() => alert('Login failed'));
 }
 
-// ---------- WebSocket Chat ----------
 ws.onmessage = (event) => {
   const msg = JSON.parse(event.data);
   if (msg.type === 'chat') {
@@ -52,7 +50,6 @@ function sendMessage() {
   input.value = '';
 }
 
-// ---------- Projects ----------
 function createProject() {
   if (role !== 'admin') return alert('Only admins can create projects');
 
@@ -96,7 +93,6 @@ function loadProjects() {
     .catch(err => console.error('Error loading projects:', err));
 }
 
-// ---------- Tasks ----------
 function addTask() {
   if (!currentProjectId) return alert("Please select a project first.");
   if (role !== 'admin') return alert("Only admins can create tasks.");
@@ -139,12 +135,10 @@ function addTask() {
     .catch(err => console.error('Error adding task:', err));
 }
 
-// ---------- Load Tasks + Gantt Chart ----------
 function loadTasks() {
   fetch(`/tasks/${currentProjectId}`)
     .then(res => res.json())
     .then(tasks => {
-      // --- Kanban Board ---
       const statuses = ['To-Do', 'In Progress', 'Done'];
       const board = document.getElementById('kanban');
       board.innerHTML = '';
@@ -161,7 +155,6 @@ function loadTasks() {
         board.appendChild(col);
       });
 
-      // --- Gantt Chart ---
       const ganttData = tasks
         .filter(t => t.start_date && t.deadline)
         .map(t => ({
@@ -177,7 +170,7 @@ function loadTasks() {
       ganttEl.innerHTML = '';
 
       if (ganttData.length > 0) {
-        new window.Gantt("#gantt", ganttData); // ✅ Ensure correct access
+        new window.Gantt("#gantt", ganttData);
       } else {
         ganttEl.innerHTML = 'No tasks to show in Gantt chart';
       }
@@ -185,7 +178,6 @@ function loadTasks() {
     .catch(err => console.error("Error loading tasks:", err));
 }
 
-// ---------- Initialize View ----------
 document.getElementById('mainApp').style.display = 'none';
 document.getElementById('adminControls').style.display = 'none';
 document.getElementById('taskControls').style.display = 'none';
