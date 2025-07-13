@@ -38,6 +38,7 @@ wss.on('connection', (ws) => {
     }
   });
 });
+
 function authAdmin(req, res, next) {
   const auth = req.headers.authorization;
   if (!auth) return res.sendStatus(401);
@@ -51,6 +52,7 @@ function authAdmin(req, res, next) {
     res.sendStatus(403);
   }
 }
+
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -71,6 +73,7 @@ app.post('/login', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 app.get('/projects', async (req, res) => {
   try {
     const result = await db.query('SELECT * FROM projects ORDER BY id DESC');
@@ -96,6 +99,7 @@ app.post('/projects', async (req, res) => {
     res.status(500).json({ error: 'Failed to create project' });
   }
 });
+
 app.get('/tasks/:projectId', async (req, res) => {
   try {
     const result = await db.query(
@@ -108,18 +112,19 @@ app.get('/tasks/:projectId', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch tasks' });
   }
 });
-app.post('/tasks', authAdmin, async (req, res) => {
-  const { project_id, title, status, deadline } = req.body;
-  console.log("Incoming Task:", { project_id, title, status, deadline });
 
-  if (!project_id || !title || !status) {
+app.post('/tasks', authAdmin, async (req, res) => {
+  const { project_id, title, status, start_date, deadline } = req.body;
+  console.log("Incoming Task:", { project_id, title, status, start_date, deadline });
+
+  if (!project_id || !title || !status || !start_date || !deadline) {
     return res.status(400).json({ error: 'Missing required task fields' });
   }
 
   try {
     const result = await db.query(
-      'INSERT INTO tasks (project_id, title, status, deadline) VALUES ($1, $2, $3, $4) RETURNING *',
-      [project_id, title, status, deadline]
+      'INSERT INTO tasks (project_id, title, status, deadline, start_date) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [project_id, title, status, deadline, start_date]
     );
     res.json(result.rows[0]);
   } catch (err) {
@@ -127,8 +132,10 @@ app.post('/tasks', authAdmin, async (req, res) => {
     res.status(500).json({ error: 'Failed to create task' });
   }
 });
+
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/client/index.html');
 });
+
 const PORT = 5000;
 server.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
