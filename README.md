@@ -1,6 +1,6 @@
 # 🛠️ Project Management Tool - Team Catalyst
 
-A lightweight and real-time web-based project management tool to simplify task assignment, team collaboration, and project tracking. Built with Node.js, PostgreSQL, WebSockets, and Frappe Gantt for dynamic task visualization.
+A lightweight and real-time web-based project management tool to simplify task assignment, team collaboration, and project tracking. Built with Node.js, MySQL, WebSockets, and Frappe Gantt for dynamic task visualization.
 
 ## 🚀 Features
 
@@ -19,8 +19,8 @@ A lightweight and real-time web-based project management tool to simplify task a
 
 | Frontend       | Backend        | Realtime & DB    |
 |----------------|----------------|------------------|
-| HTML, CSS, JS  | Node.js, Express.js | WebSocket (ws), PostgreSQL |
-| Frappe Gantt   | REST API       | pg npm module    |
+| HTML, CSS, JS  | Node.js, Express.js | WebSocket (ws), MySQL |
+| Frappe Gantt   | REST API       | mysql2 npm module    |
 
 ---
 

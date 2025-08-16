@@ -2,7 +2,7 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const cors = require('cors');
-const db = require('./db.js'); // db.js must export a promise-enabled pool
+const db = require('./db.js'); 
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
@@ -52,7 +52,6 @@ function authAdmin(req, res, next) {
   }
 }
 
-// ---------- AUTH ----------
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -74,7 +73,6 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// ---------- PROJECTS ----------
 app.get('/projects', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM projects ORDER BY id DESC');
@@ -101,7 +99,6 @@ app.post('/projects', async (req, res) => {
   }
 });
 
-// ---------- TASKS ----------
 app.get('/tasks/:projectId', async (req, res) => {
   try {
     const [rows] = await db.query(
