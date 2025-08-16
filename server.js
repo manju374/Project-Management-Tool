@@ -2,8 +2,7 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const cors = require('cors');
-const db = require('./db.js');
-const bcrypt = require('bcrypt');
+const db = require('./db.js'); // db.js must export a promise-enabled pool
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
@@ -53,19 +52,20 @@ function authAdmin(req, res, next) {
   }
 }
 
+// ---------- AUTH ----------
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
-    const result = await db.query(
-      'SELECT * FROM users WHERE username = $1 AND password = $2',
+    const [rows] = await db.query(
+      'SELECT * FROM users WHERE username = ? AND password = ?',
       [username, password]
     );
 
-    if (result.rows.length === 0) {
+    if (rows.length === 0) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const user = result.rows[0];
+    const user = rows[0];
     const token = jwt.sign({ id: user.id, role: user.role }, SECRET, { expiresIn: '1h' });
     res.json({ token, role: user.role });
   } catch (err) {
@@ -74,10 +74,11 @@ app.post('/login', async (req, res) => {
   }
 });
 
+// ---------- PROJECTS ----------
 app.get('/projects', async (req, res) => {
   try {
-    const result = await db.query('SELECT * FROM projects ORDER BY id DESC');
-    res.json(result.rows);
+    const [rows] = await db.query('SELECT * FROM projects ORDER BY id DESC');
+    res.json(rows);
   } catch (err) {
     console.error('Error fetching projects:', err);
     res.status(500).json({ error: 'Failed to fetch projects' });
@@ -89,24 +90,25 @@ app.post('/projects', async (req, res) => {
   if (!name) return res.status(400).json({ error: 'Project name is required' });
 
   try {
-    const result = await db.query(
-      'INSERT INTO projects (name) VALUES ($1) RETURNING *',
+    const [result] = await db.query(
+      'INSERT INTO projects (name) VALUES (?)',
       [name]
     );
-    res.json(result.rows[0]);
+    res.json({ id: result.insertId, name });
   } catch (err) {
     console.error('Error creating project:', err);
     res.status(500).json({ error: 'Failed to create project' });
   }
 });
 
+// ---------- TASKS ----------
 app.get('/tasks/:projectId', async (req, res) => {
   try {
-    const result = await db.query(
-      'SELECT * FROM tasks WHERE project_id = $1 ORDER BY id DESC',
+    const [rows] = await db.query(
+      'SELECT * FROM tasks WHERE project_id = ? ORDER BY id DESC',
       [req.params.projectId]
     );
-    res.json(result.rows);
+    res.json(rows);
   } catch (err) {
     console.error('Error fetching tasks:', err);
     res.status(500).json({ error: 'Failed to fetch tasks' });
@@ -122,11 +124,11 @@ app.post('/tasks', authAdmin, async (req, res) => {
   }
 
   try {
-    const result = await db.query(
-      'INSERT INTO tasks (project_id, title, status, deadline, start_date) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+    const [result] = await db.query(
+      'INSERT INTO tasks (project_id, title, status, deadline, start_date) VALUES (?, ?, ?, ?, ?)',
       [project_id, title, status, deadline, start_date]
     );
-    res.json(result.rows[0]);
+    res.json({ id: result.insertId, project_id, title, status, start_date, deadline });
   } catch (err) {
     console.error('Error creating task:', err);
     res.status(500).json({ error: 'Failed to create task' });
